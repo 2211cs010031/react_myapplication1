@@ -1,0 +1,46 @@
+// USE STATE
+// const Counter=()=>{
+//   const[count,setCount]=useState(0);
+//   // current state =count
+//   // fnction to update state=setCount
+//   // use state to initialize the state=0
+//   return(
+//     <div>
+//       <h1>{count}</h1>
+//       <button onClick={() =>setCount(count+1)}>Increment</button>
+//       <button onClick={() =>setCount(count-1)}>Decrement</button>
+//     </div>
+//   );
+// }
+// export default Counter;
+
+import React,{useState} from 'react';
+const ThemeToggler=()=>{
+  const[theme,setTheme]=useState('light')
+  
+  const toggleTheme=()=>{
+    setTheme(prevTheme=>(prevTheme=='light'?'dark':'light'));
+
+  }
+  return(
+    <div style={{backgroundColour:theme=='light'?'white':'black',color:theme=='light'?'black':'white' ,textAlign:'center'}}>
+      <h1>the curent theme is{theme}</h1>
+      <button onClick={toggleTheme}>toggleTheme</button>
+
+    </div>
+  )
+};
+export default ThemeToggler;
+
+React Hooks:
+Introduction on react 16.8 version
+Used to mansge state and lifecycle features in functional components
+State:state is an essential part in react because it allows components to be dynamic
+#Dynamic:if click on some butotn some action to be  happen that is called dynamic,interactibe anad capable of responding to user inputs or change over time
+How to implemeent  state in react:
+1.usestatehook:allows   you to add state to the functional components
+Syntax:
+Const[state,setState]=useState(initial value)
+State:this is a current state
+setState:it is a function to update the state
+Initial value:the value u want to set as the initial value
