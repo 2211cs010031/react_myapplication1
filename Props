@@ -1,0 +1,141 @@
+Use Context():
+Props(Properties) in react are used to pass  the data from parent component to child component.
+Prop drilling:it is the process of passing data from parent component to deeply(nested) child component through the interemdiate components by passing data as props at each level.
+                    App
+                  /    \
+           Child1      child2
+         /      \
+     Child3     child4
+
+function App(){
+  const data="hello iam Abhinaya"
+  return(
+    <div>
+      <User1 data={data}/>
+
+    </div>
+  )
+}
+// user1 compomnent
+function User1({data}){
+  return<User2 data={data}/>
+}
+function User2({data}){
+  return<User3 data={data}/>
+}
+function User3({data}){
+  return<User4 data={data}/>
+}
+function User4({data}){
+  return<div>{data}</div>
+}
+export default App;
+
+
+Without user3 and user4:
+function App(){
+  const data="hello iam Abhinaya"
+  return(
+    <div>
+      <User1 data={data}/>
+
+    </div>
+  )
+}
+// user1 compomnent
+function User1({data}){
+  return<User2 data={data}/>
+}
+function User2({data}){
+  return<User3/>
+}
+function User3({data}){
+  return<User4/>
+}
+function User4({data}){
+  return<div>{data}</div>
+}
+export default App;
+ 
+React Usecontext:alternate to not to use intermediate users
+Create a context
+Provide the context
+import React, { createContext, useContext } from "react";
+
+// create context to hold the data
+const DataContext = createContext();
+function App() {
+  // the data  we want to share with user4
+  const data = "hello iam Abhinaya";
+  return (
+    <DataContext.Provider value={data}>
+      <User1 />
+    </DataContext.Provider>
+  );
+}
+// user1 compomnent
+function User1({ data }) {
+  return <User2 />;
+}
+function User2({ data }) {
+  return <User3 />;
+}
+function User3({ data }) {
+  return <User4 />;
+}
+function User4() {
+  const data = useContext(DataContext);
+  return <div>{data}</div>;
+}
+export default App;
+
+Assignment:
+Imagine you are building an a pp that displays the details of  a user prifile .the data about the user includes their name and email .the app component will pass this user data to deeply nested child  component called profile.
+In this:
+1.use prop drilling to pass the data from app to profile
+2.Use react context to pass the data directly to profile wihtout going through each component
+Ans:
+import React, { createContext, useContext } from "react";
+
+// Creating Context for user data
+const UserContext = createContext();
+// Profile Component (Receives props in props drilling method)
+const ProfileWithProps = ({user}) => {
+  return (
+    <div className="p-4 border rounded-lg shadow-md">
+      <h2 className="text-xl font-bold">Profile (Props Drilling)</h2>
+      <p><strong>Name:</strong> {user.name}</p>
+      <p><strong>Email:</strong> {user.email}</p>
+    </div>
+  );
+};
+// Profile Component using Context
+const ProfileWithContext = () => {
+  const user = useContext(UserContext);
+  return (
+    <div className="p-4 border rounded-lg shadow-md mt-4">
+      <h2 className="text-xl font-bold">Profile (Using Context)</h2>
+      <p><strong>Name:</strong> {user.name}</p>
+      <p><strong>Email:</strong> {user.email}</p>
+    </div>
+  );
+};
+// Intermediate Component to simulate props drilling
+const IntermediateComponent = ({ user }) => {
+  return <ProfileWithProps user={user} />;
+};
+const App = () => {
+  const user = { name: "S.Abhinaya", email: "2211cs010031@mallareddyuniversity.ac.in" };
+  return (
+    <UserContext.Provider value={user}>
+      <div className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-lg">
+        <h1 className="text-2xl font-bold mb-4">User Profile App</h1>
+        {/* Using Props Drilling */}
+        <IntermediateComponent user={user} />
+        {/* Using React Context */}
+        <ProfileWithContext />
+      </div>
+    </UserContext.Provider>
+  );
+};
+export default App;
