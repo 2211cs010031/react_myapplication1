@@ -1,0 +1,178 @@
+/ import React, { useReducer } from 'react';
+// import './App.css';
+
+// function appleReducer(state, action) {
+//   switch (action.type) {
+//     case 'ADD_APPLE':
+//       return state + 1;
+
+//     case 'EAT_APPLE':
+//       return state > 0 ? state - 1 : state; // Prevents negative apples
+
+//     default:
+//       return state;
+//   }
+// }
+
+// function App() {
+//   const [state, dispatch] = useReducer(appleReducer, 3);
+  
+//   return (
+//     <div style={{ textAlign: 'center' }}>
+//       <h1>Apple Counter</h1>
+//       <p>NUMBER OF APPLES: {state}</p>
+
+//       <button className='a' onClick={() => dispatch({ type: 'ADD_APPLE' })}>ADD APPLE</button>
+//       <button className='b' onClick={() => dispatch({ type: 'EAT_APPLE' })}>EAT APPLE</button>
+
+//       <div style={{ marginTop: '20px' }}>
+//         {Array.from({ length: state }).map((_, index) => (
+//           <img key={index} src="https://upload.wikimedia.org/wikipedia/commons/1/15/Red_Apple.jpg" alt="Apple" width="50" style={{ margin: '5px' }} />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default App;
+ 
+import React,{useState,useEffect,useRef} from 'react';
+
+function counterWithPrev(){
+  const[count,setCount]=useState(0)
+  const prevCountRef=useRef();
+  // create a ref to store the previous value
+  useEffect(()=>{
+    prevCountRef.current=count;
+  
+  },[count])
+  return(
+    <div>
+      <p>current count:{count}</p>
+      <p>prev count:{prevCountRef.current}</p>
+      <button onClick={()=>setCount(count+1)}>increment</button>
+    </div>
+
+
+  )
+}
+export default counterWithPrev;
+
+theoritical:
+UseRef:
+useState:
+When we change the usestate ,react will render the component and It will  update the UI with new element
+useRef:changing the value by using useRef does not re-render ;it stays the same even the value is updated
+Useref:when you change the value stored int  ref.current it does no make the component re-render
+This is useful when you need to store the values or interact with dom elements with out extra rendres
+Commonly used:
+1.accessing dom element:like scrolling to screen
+Focusing on the input
+2.
+Usestate:tracks the current value
+Useref:tracks the prev value
+
+
+// ASSIGNMWNT
+import React, { createContext, useContext, useReducer, useState, useMemo } from "react";
+
+// 1️ Create Context
+const ItemContext = createContext();
+
+// 2️ Reducer function to manage state
+function itemReducer(state, action) {
+  switch (action.type) {
+    case "ADD_ITEM":
+      return [...state, { id: Date.now(), name: action.payload }];
+    case "REMOVE_ITEM":
+      return state.filter((item) => item.id !== action.payload);
+    default:
+      return state;
+  }
+}
+
+// 3️ Context Provider Component
+function ItemProvider({ children }) {
+  const [state, dispatch] = useReducer(itemReducer, []);
+  return (
+    <ItemContext.Provider value={{ state, dispatch }}>
+      {children}
+    </ItemContext.Provider>
+  );
+}
+
+// 4️ Custom Hook to use Context
+function useItems() {
+  return useContext(ItemContext);
+}
+
+// 5️ ItemList Component (Uses useMemo for optimization)
+function ItemList() {
+  const { state, dispatch } = useItems();
+
+  // Optimized list rendering using useMemo
+  const itemList = useMemo(() => {
+    return state.map((item) => (
+      <li key={item.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        {item.name}
+        <button
+          onClick={() => dispatch({ type: "REMOVE_ITEM", payload: item.id })}
+          style={{ marginLeft: "10px", background: "red", color: "white", border: "none", padding: "5px 10px", cursor: "pointer" }}
+        >
+           Remove
+        </button>
+      </li>
+    ));
+  }, [state]);
+
+  return (
+    <div>
+      <h2>Item List</h2>
+      <p>Total Items: {state.length}</p>
+      <ul style={{ listStyle: "none", padding: 0 }}>{itemList}</ul>
+    </div>
+  );
+}
+
+// 6️ AddItem Component
+function AddItem() {
+  const [input, setInput] = useState("");
+  const { dispatch } = useItems();
+
+  const handleAdd = () => {
+    if (input.trim()) {
+      dispatch({ type: "ADD_ITEM", payload: input });
+      setInput("");
+    }
+  };
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        placeholder="Enter item"
+        style={{ padding: "8px", marginRight: "5px" }}
+      />
+      <button onClick={handleAdd} style={{ padding: "8px 15px", background: "green", color: "white", border: "none", cursor: "pointer" }}>
+        Add Item
+      </button>
+    </div>
+  );
+}
+
+// 7️ Main App Component
+function App() {
+  return (
+    <ItemProvider>
+      <div style={{ textAlign: "center", padding: "20px", fontFamily: "Arial" }}>
+        <h1>Item Manager</h1>
+        <AddItem />
+        <ItemList />
+      </div>
+    </ItemProvider>
+  );
+}
+
+export default App;
